@@ -13,19 +13,19 @@ class BasicData {
     this.diet = diet;
   }
 
-  isTallerThan(other) {
+  compareHeightTo(other) {
     return this.height > other.height
       ? cmp.GREATER
       : (this.height === other.height ? cmp.EQUAL : cmp.LESSER);
   }
 
-  isHeavierThan(other) {
+  compareWeightTo(other) {
     return this.weight > other.weight
       ? cmp.GREATER
       : (this.weight === other.weight ? cmp.EQUAL : cmp.LESSER);
   }
 
-  hasSameDietAs(other) {
+  compareDietTo(other) {
     return this.diet === other.diet ? cmp.EQUAL : cmp.DIFFERENT;
   }
 }
@@ -43,7 +43,7 @@ class Human extends BasicData {
 }
 
 
-// Create Dino Constructor
+// Create Dinosaur Object
 class Dinosaur extends BasicData {
   constructor({ species, weight, height, diet, where, when, fact }) {
     super({ height, weight, diet });
@@ -130,10 +130,10 @@ const compareBasicData = (dinosaurs, human) => {
   for (const dino of dinosaurs) {
 
     stats[human.name] = {};
-    if (dino.height < human.height) {
+    if (dino.compareHeightTo(human) === cmp.LESSER) {
       stats[human.name].height = `I'm <em>taller</em> than a ${dino.species}!!`;
     }
-    if (dino.weight < human.weight) {
+    if (human.compareWeightTo(dino) === cmp.GREATER) {
       stats[human.name].weight = `I <em>weigh</em> more than a ${dino.species}!!`;
     }
 
@@ -151,9 +151,9 @@ const compareHeight = (dino, human) => {
   const comparison = human.height > 0
     ? Math.round((dino.height / human.height)) : dino.height;
 
-  if (dino.isTallerThan(human) === cmp.GREATER) {
+  if (dino.compareHeightTo(human) === cmp.GREATER) {
     return `At ${height} inches, I am <em>${comparison}</em> times taller than hooman!`;
-  } else if (dino.isTallerThan(human) === cmp.EQUAL) {
+  } else if (dino.compareHeightTo(human) === cmp.EQUAL) {
     return `At ${height} inches, I am the <em>same</em> height as hooman!`;
   } else {
     return `At ${height} inches, hooman is <em>${Math.round((human.height / dino.height))}</em> taller than me!`;
@@ -165,9 +165,9 @@ const compareWeight = (dino, human) => {
   const comparison = human.weight > 0
     ? Math.round((dino.weight / human.weight)) : dino.weight;
 
-  if (dino.isHeavierThan(human) === cmp.GREATER) {
+  if (dino.compareWeightTo(human) === cmp.GREATER) {
     return `At ${weight} pounds, I am <em>${comparison}</em> times heavier than hooman!`;
-  } else if (dino.isHeavierThan(human) === cmp.EQUAL) {
+  } else if (dino.compareWeightTo(human) === cmp.EQUAL) {
     return `At ${weight} pounds, I am the <em>same</em> weight as hooman!`;
   } else {
     return `At ${weight} pounds, hooman is <em>${Math.round((human.weight / dino.weight))}</em> times heavier than me!`;
@@ -175,7 +175,7 @@ const compareWeight = (dino, human) => {
 };
 
 const compareDiet = (dino, human) => {
-  if (dino.hasSameDietAs(human) === cmp.DIFFERENT) {
+  if (dino.compareDietTo(human) === cmp.DIFFERENT) {
     return `As ${dino.diet[0] === "o" ? "an <em>" + dino.diet : "a <em>" + dino.diet}</em>, I eat differently from hooman!`;
   } else {
     return `As ${dino.diet[0] === "o" ? "an <em>" + dino.diet : "a <em>" + dino.diet}</em>, I have same diet as hooman!`;
