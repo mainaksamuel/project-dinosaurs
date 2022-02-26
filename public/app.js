@@ -8,6 +8,7 @@ const cmp = {
   "DIFFERENT": 2, // used when strings/objects are different
 }
 
+
 /**
  * @description BasicData Object class
  */
@@ -243,20 +244,8 @@ const compareDiet = (dino, human) => {
 };
 
 
-/*
-    Grid Tile layout:
-      _____________
-      | 1 | 2 | 3 |
-      -------------
-      | 4 | H | 6 |
-      -------------
-      | 7 | 8 | 9 |
-      -------------
-    Note:  H => human tile (5)
-*/
-
 /**
- * @description Generate Grid Tiles and display infographic
+ * @description Generate Grid Tiles and display infographic with the `human` in the center tile
  * @param {array[Dinosaur]} dinosaurs - An array containing Dinosaur objects
  * @param {Human} human - Human object from form data
  * @returns {object} Comparison statistics for each dinosaur and human
@@ -265,6 +254,7 @@ const generateGridTiles = (dinosaurs, human) => {
   const gridTileObjects = randomizeGridTileOrder(dinosaurs)
   const statistics = compareBasicData(dinosaurs, human);
 
+  // position human at the center of the grid tile objects
   gridTileObjects.splice(4, 0, human);
 
   for (const object of gridTileObjects) {
