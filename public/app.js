@@ -127,6 +127,11 @@ const form = document.getElementById("dino-compare");
 const pageReloadBtn = document.getElementById("page-reload-btn");
 const compareBtn = document.getElementById("btn");
 
+/*
+ * Main Entry
+ *
+ * Retrieve user data from form once `compare` button is clicked
+ */
 compareBtn.addEventListener("click", () => {
   const formData = getFormData();
 
@@ -137,6 +142,7 @@ compareBtn.addEventListener("click", () => {
     return human;
   })(formData);
 
+  // hide form before displaying infographic
   form.hidden = true;
 
   // make tiles or display infographic
@@ -145,7 +151,7 @@ compareBtn.addEventListener("click", () => {
 
 });
 
-
+// Reload page to try again (with different data)
 pageReloadBtn.addEventListener("click", () => {
   location.reload();
 });
@@ -293,12 +299,12 @@ const generateTile = (entity, stats) => {
     identity.class = "human";
     identity.imgCaption = "hooman";
     identity.statsList = `
-<ul>
-     <li> I am <em>${entity.height}</em> inches tall</li>
-     <li> My current weight is <em>${entity.weight}</em> pounds </li>
-     <li> I am ${entity.diet[0] === "o" ? "an <em>" + entity.diet : "a <em>" + entity.diet}</em> .</li>
-</ul>
-`;
+        <ul>
+            <li> I am <em>${entity.height}</em> inches tall</li>
+            <li> My current weight is <em>${entity.weight}</em> pounds </li>
+            <li> I am ${entity.diet[0] === "o" ? "an <em>" + entity.diet : "a <em>" + entity.diet}</em> .</li>
+        </ul>
+        `;
 
     // set a random fact for the human from the stats
     if ((Object.keys(stats).length !== 0)) {
@@ -311,32 +317,32 @@ const generateTile = (entity, stats) => {
     identity.class = "dinosaur";
     identity.imgCaption = entity.species.split(" ").join("-").toLowerCase();
     identity.statsList = `
-  <ul>
-    <li>${stats.height}</li>
-    <li>${stats.weight}</li>
-    <li>${stats.diet}</li>
-    <li>${entity.where ? "I made <em>" + entity.where + "</em> my backyard" : ""} </li>
-    <li>${entity.when ? "I lived in <em>" + entity.when + "</em> period" : ""} </li>
-  </ul >
-`;
+        <ul>
+          <li>${stats.height}</li>
+          <li>${stats.weight}</li>
+          <li>${stats.diet}</li>
+          <li>${entity.where ? "I made <em>" + entity.where + "</em> my backyard" : ""} </li>
+          <li>${entity.when ? "I lived in <em>" + entity.when + "</em> period" : ""} </li>
+        </ul >
+      `;
   };
 
   // return grid-tile template
   return `
-<div class="grid-item" data-entity="${identity.class}">
-  <header class="grid-item-header">
-    <h3>${identity.id}</h3>
-    <figure>
-        <img src="${entity.imgURL}" alt="${identity.id.toLowerCase()} image"/>
-        <figcaption>${identity.imgCaption}</figcaption>
-    </figure>
-  </header>
+        <div class="grid-item" data-entity="${identity.class}">
+          <header class="grid-item-header">
+            <h3>${identity.id}</h3>
+            <figure>
+                <img src="${entity.imgURL}" alt="${identity.id.toLowerCase()} image"/>
+                <figcaption>${identity.imgCaption}</figcaption>
+            </figure>
+          </header>
 
-  ${identity.statsList}
+          ${identity.statsList}
 
-  <footer class="grid-item-footer">
-    <p>${entity.fact ? entity.fact : ""}</p>
-  </footer>
-</div >
-  `;
+          <footer class="grid-item-footer">
+            <p>${entity.fact ? entity.fact : ""}</p>
+          </footer>
+        </div >
+       `;
 };
