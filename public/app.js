@@ -156,10 +156,10 @@ const compareBasicData = (dinosaurs, human) => {
 
     statistics[human.name] = {};
     if (dino.compareHeightTo(human) === cmp.LESSER) {
-      statistics[human.name].height = `I'm <em>taller</em> than a ${dino.species}!!`;
+      statistics[human.name].height = `I'm <em>taller</em>  than a ${dino.species}!!`;
     }
     if (human.compareWeightTo(dino) === cmp.GREATER) {
-      statistics[human.name].weight = `I <em>weigh</em> more than a ${dino.species}!!`;
+      statistics[human.name].weight = `I <em>weigh</em>  more than a ${dino.species}!!`;
     }
 
     statistics[dino.species] = {};
@@ -188,7 +188,7 @@ const compareHeight = (dino, human) => {
   } else if (dino.compareHeightTo(human) === cmp.EQUAL) {
     return `At ${height} inches, I am the <em>same</em> height as hooman!`;
   } else {
-    return `At ${height} inches, hooman is <em>${Math.round((human.height / dino.height))}</em> taller than me!`;
+    return `At ${height} inches, hooman is <em>${Math.round((human.height / dino.height))}</em> times taller than me!`;
   }
 };
 
@@ -248,9 +248,9 @@ const compareDiet = (dino, human) => {
  * @returns {object} Comparison statistics for each dinosaur and human
  */
 const generateGridTiles = (dinosaurs, human) => {
+  const gridTileObjects = randomizeGridTileOrder(dinosaurs)
   const statistics = compareBasicData(dinosaurs, human);
 
-  const gridTileObjects = randomizeGridTileOrder(dinosaurs)
   gridTileObjects.splice(4, 0, human);
 
   for (const object of gridTileObjects) {
@@ -277,25 +277,14 @@ const randomizeGridTileOrder = (gridTiles) => {
  * @returns {string} String markup representation of a grid tile
  */
 const generateTile = (entity, stats) => {
-  const identity = (entity instanceof Human)
-    ? {
-      id: entity.name, class: "human", imgCaption: "hooman"
-    }
-    : {
-      id: entity.species, class: "dinosaur", imgCaption: entity.species.split(" ").join("-").toLowerCase(),
-    };
+  const identity = {};
 
-  const statsList = (entity instanceof Dinosaur)
-    ? `
-  <ul>
-    <li>${stats.height}</li>
-    <li>${stats.weight}</li>
-    <li>${stats.diet}</li>
-    <li>${entity.where ? "I made <em>" + entity.where + "</em> my backyard" : ""} </li>
-    <li>${entity.when ? "I lived in <em>" + entity.when + "</em> period" : ""} </li>
-  </ul >
-`
-    : `
+  if (entity instanceof Human) {
+    // Entity is a Human
+    identity.id = entity.name;
+    identity.class = "human";
+    identity.imgCaption = "hooman";
+    identity.statsList = `
 <ul>
      <li> I am <em>${entity.height}</em> inches tall</li>
      <li> My current weight is <em>${entity.weight}</em> pounds </li>
@@ -303,11 +292,28 @@ const generateTile = (entity, stats) => {
 </ul>
 `;
 
-  // set a random fact for the human from the stats
-  if (entity instanceof Human && (Object.keys(stats).length !== 0)) {
-    entity.fact = (Math.random() < 0.5) ? stats.height : stats.weight;
-  }
+    // set a random fact for the human from the stats
+    if ((Object.keys(stats).length !== 0)) {
+      entity.fact = (Math.random() < 0.5) ? stats.height : stats.weight;
+    }
 
+  } else {
+    // Entity is a Dinosaur
+    identity.id = entity.species;
+    identity.class = "dinosaur";
+    identity.imgCaption = entity.species.split(" ").join("-").toLowerCase();
+    identity.statsList = `
+  <ul>
+    <li>${stats.height}</li>
+    <li>${stats.weight}</li>
+    <li>${stats.diet}</li>
+    <li>${entity.where ? "I made <em>" + entity.where + "</em> my backyard" : ""} </li>
+    <li>${entity.when ? "I lived in <em>" + entity.when + "</em> period" : ""} </li>
+  </ul >
+`;
+  };
+
+  // return grid-tile template
   return `
 <div class="grid-item" data-entity="${identity.class}">
   <header class="grid-item-header">
@@ -318,7 +324,7 @@ const generateTile = (entity, stats) => {
     </figure>
   </header>
 
-  ${statsList}
+  ${identity.statsList}
 
   <footer class="grid-item-footer">
     <p>${entity.fact ? entity.fact : ""}</p>
