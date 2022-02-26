@@ -1,11 +1,16 @@
-// Comparison meta
+/**
+ * @description Object used for uniformly making comparisons
+ */
 const cmp = {
   "LESSER": -1,
   "EQUAL": 0,
   "GREATER": 1,
-  "DIFFERENT": 2, // when comparing different strings
+  "DIFFERENT": 2, // used when strings/objects are different
 }
 
+/**
+ * @description BasicData Object class
+ */
 class BasicData {
   constructor({ height, weight, diet }) {
     this.height = height;
@@ -31,19 +36,23 @@ class BasicData {
 }
 
 
-// Create Human Object
+/**
+ * @description Human Object class
+ */
 class Human extends BasicData {
-  constructor({ name, height, weight, diet, fact = "" }) {
+  constructor({ name, height, weight, diet }) {
     super({ height, weight, diet });
 
     this.name = name ? name : "Anonymous";
-    this.fact = fact.length > 0 ? fact : "Sorry, No interesting fact found!";
+    this.fact = "Sorry, No interesting fact found!";
     this.imgURL = "";
   }
 }
 
 
-// Create Dinosaur Object
+/**
+ * @description Dinosaur Object class
+ */
 class Dinosaur extends BasicData {
   constructor({ species, weight, height, diet, where, when, fact }) {
     super({ height, weight, diet });
@@ -57,7 +66,10 @@ class Dinosaur extends BasicData {
 }
 
 
-// Read Dino JSON Objects from file
+/**
+ * @description Retrieve dino JSON data from dino.json file
+ * @returns {promise[json]} A promise, which when fulfilled contains dino JSON data
+ */
 async function getDinoJSONData() {
   return await fetch("dino.json")
     .then(response => {
@@ -69,7 +81,10 @@ async function getDinoJSONData() {
 }
 
 
-// Create Dino Objects
+/**
+ * @description Create Dinosaur objects from dino JSON data
+ * @returns {array[Dinosaur]} Array containing Dinosaur objects
+ */
 const dinosaurArray = (function getDinosaurArray() {
   let dinoArray = [];
 
@@ -85,7 +100,11 @@ const dinosaurArray = (function getDinosaurArray() {
   return dinoArray;
 })();
 
-// Use IIFE to get human data from form
+
+/**
+ * @description Get data from form
+ * @returns {object} Object containing form data
+ */
 function getFormData() {
 
   return (function() {
@@ -103,7 +122,6 @@ function getFormData() {
 }
 
 
-
 const grid = document.getElementById("grid");
 const form = document.getElementById("dino-compare");
 const compareBtn = document.getElementById("btn");
@@ -111,7 +129,7 @@ const compareBtn = document.getElementById("btn");
 compareBtn.addEventListener("click", () => {
   const formData = getFormData();
 
-  // create a human object from valid form data
+  // create a human object from form data
   const human = (function(formData) {
     const human = new Human(formData);
     human.imgURL = "/images/human.png";
@@ -124,28 +142,42 @@ compareBtn.addEventListener("click", () => {
 
 });
 
+
+/**
+ * @description Compare basic data (height, weight, diet) between human and dinosaur
+ * @param {array[Dinosaur]} dinosaurs - An array containing Dinosaur objects
+ * @param {Human} human - Human object from form data
+ * @returns {object} Comparison statistics for each dinosaur and human
+ */
 const compareBasicData = (dinosaurs, human) => {
 
-  const stats = {}
+  const statistics = {}
   for (const dino of dinosaurs) {
 
-    stats[human.name] = {};
+    statistics[human.name] = {};
     if (dino.compareHeightTo(human) === cmp.LESSER) {
-      stats[human.name].height = `I'm <em>taller</em> than a ${dino.species}!!`;
+      statistics[human.name].height = `I'm <em>taller</em> than a ${dino.species}!!`;
     }
     if (human.compareWeightTo(dino) === cmp.GREATER) {
-      stats[human.name].weight = `I <em>weigh</em> more than a ${dino.species}!!`;
+      statistics[human.name].weight = `I <em>weigh</em> more than a ${dino.species}!!`;
     }
 
-    stats[dino.species] = {};
-    stats[dino.species].height = compareHeight(dino, human);
-    stats[dino.species].weight = compareWeight(dino, human);
-    stats[dino.species].diet = compareDiet(dino, human);
+    statistics[dino.species] = {};
+    statistics[dino.species].height = compareHeight(dino, human);
+    statistics[dino.species].weight = compareWeight(dino, human);
+    statistics[dino.species].diet = compareDiet(dino, human);
   }
 
-  return stats;
+  return statistics;
 };
 
+
+/**
+ * @description Compare height between human and dinosaur
+ * @param {Dinosaur} dinosaur - Dinosaur object
+ * @param {Human} human - Human object from form data
+ * @returns {string} Comparison string between dinosaur and human
+ */
 const compareHeight = (dino, human) => {
   const height = dino.height.toLocaleString("en-US");
   const comparison = human.height > 0
@@ -160,6 +192,13 @@ const compareHeight = (dino, human) => {
   }
 };
 
+
+/**
+ * @description Compare weight between human and dinosaur
+ * @param {Dinosaur} dinosaur - Dinosaur object
+ * @param {Human} human - Human object from form data
+ * @returns {string} Comparison string between dinosaur and human
+ */
 const compareWeight = (dino, human) => {
   const weight = dino.weight.toLocaleString("en-US");
   const comparison = human.weight > 0
@@ -174,6 +213,13 @@ const compareWeight = (dino, human) => {
   }
 };
 
+
+/**
+ * @description Compare diet between human and dinosaur
+ * @param {Dinosaur} dinosaur - Dinosaur object
+ * @param {Human} human - Human object from form data
+ * @returns {string} Comparison string between dinosaur and human
+ */
 const compareDiet = (dino, human) => {
   if (dino.compareDietTo(human) === cmp.DIFFERENT) {
     return `As ${dino.diet[0] === "o" ? "an <em>" + dino.diet : "a <em>" + dino.diet}</em>, I eat differently from hooman!`;
@@ -195,6 +241,12 @@ const compareDiet = (dino, human) => {
     Note:  H => human tile (5)
 */
 
+/**
+ * @description Generate Grid Tiles and display infographic
+ * @param {array[Dinosaur]} dinosaurs - An array containing Dinosaur objects
+ * @param {Human} human - Human object from form data
+ * @returns {object} Comparison statistics for each dinosaur and human
+ */
 const generateGridTiles = (dinosaurs, human) => {
   const statistics = compareBasicData(dinosaurs, human);
 
@@ -207,10 +259,23 @@ const generateGridTiles = (dinosaurs, human) => {
   }
 };
 
+
+/**
+ * @description Randomize the order of elements in grid tile array
+ * @param {array} gridTiles - An array containing grid tile objects
+ * @returns {array} Array object with elements in random order
+ */
 const randomizeGridTileOrder = (gridTiles) => {
   return gridTiles.sort(() => Math.random() - 0.5)
 };
 
+
+/**
+ * @description Generate markup for each tile in grid array
+ * @param {object} entity - A grid tile object representing a dinosaur or human
+ * @param {object} stats - Statistics for the entity object
+ * @returns {string} String markup representation of a grid tile
+ */
 const generateTile = (entity, stats) => {
   const identity = (entity instanceof Human)
     ? {
