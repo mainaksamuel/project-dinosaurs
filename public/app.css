@@ -202,6 +202,16 @@ select {
     transform: scale(1.2);  /* 120% zoom */
 }
 
+#page-reload-btn:hover:after{
+    content: attr(tip);
+    position: absolute;
+    font-size: 90%;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -50px;
+}
+
 /* Footer */
 .fine-print {
     display: block;
