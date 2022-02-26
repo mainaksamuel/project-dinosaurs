@@ -1,9 +1,9 @@
-// Comparison metrics
+// Comparison meta
 const cmp = {
   "LESSER": -1,
   "EQUAL": 0,
   "GREATER": 1,
-  "DIFFERENT": 2, // used for different strings
+  "DIFFERENT": 2, // when comparing different strings
 }
 
 class BasicData {
@@ -33,16 +33,18 @@ class BasicData {
 
 // Create Human Object
 class Human extends BasicData {
-  constructor({ name, height, weight, diet }) {
+  constructor({ name, height, weight, diet, fact = "" }) {
     super({ height, weight, diet });
 
-    this.name = name;
+    this.name = name ? name : "Anonymous";
+    this.fact = fact.length > 0 ? fact : "Sorry, No interesting fact found!";
+    this.imgURL = "";
   }
 }
 
 
 // Create Dino Constructor
-class Dino extends BasicData {
+class Dinosaur extends BasicData {
   constructor({ species, weight, height, diet, where, when, fact }) {
     super({ height, weight, diet });
 
@@ -55,30 +57,37 @@ class Dino extends BasicData {
 }
 
 
-// Create Dino Objects
-async function getDinosaurs() {
+// Read Dino JSON Objects from file
+async function getDinoJSONData() {
   return await fetch("dino.json")
     .then(response => {
       return response.json();
-    })
-    .then(jsonData => {
-      const dinoArray = [];
-      for (const data of jsonData.Dinos) {
-        const dino = new Dino(data);
-        dino.imgURL = `/images/${dino.species.toLowerCase()}.png`;
-        dinoArray.push(dino);
-      }
-      return dinoArray;
     })
     .catch(e => {
       console.error("ERROR: Could not read `Dinosaur` data. ", e);
     });
 }
-const dinos = getDinosaurs();
 
+
+// Create Dino Objects
+const dinosaurArray = (function getDinosaurArray() {
+  let dinoArray = [];
+
+  const dinoJSONData = getDinoJSONData();
+  dinoJSONData.then(jsonData => {
+    for (const data of jsonData.Dinos) {
+      const dino = new Dinosaur(data);
+      dino.imgURL = `/images/${dino.species.toLowerCase()}.png`;
+      dinoArray.push(dino);
+    }
+  })
+
+  return dinoArray;
+})();
 
 // Use IIFE to get human data from form
 function getFormData() {
+
   return (function() {
     const name = document.getElementById("name").value;
     const feet = Number(document.getElementById("feet").value);
@@ -94,78 +103,161 @@ function getFormData() {
 }
 
 
-function validateFormInput(formData) {
-  // TODO
-  return formData;
-}
 
-
+const grid = document.getElementById("grid");
+const form = document.getElementById("dino-compare");
 const compareBtn = document.getElementById("btn");
-compareBtn.addEventListener("click", () => {
 
+compareBtn.addEventListener("click", () => {
   const formData = getFormData();
 
-  // validate form input
-  const validatedFormData = validateFormInput(formData);
-
   // create a human object from valid form data
-  const human = (function(validatedFormData) {
-    return new Human(validatedFormData);
-  })(validatedFormData);
-
-  // make comparison between dinos and human
-  dinos.then(dinoObjects => {
-    for (const dino of dinoObjects) {
-      compareBasicData(human, dino);
-    }
-  });
+  const human = (function(formData) {
+    const human = new Human(formData);
+    human.imgURL = "/images/human.png";
+    return human;
+  })(formData);
 
   // make tiles or display infographic
-  // TODO
+  form.hidden = true;
+  generateGridTiles(dinosaurArray, human);
 
 });
 
+const compareBasicData = (dinosaurs, human) => {
 
-const compareBasicData = (human, dino) => {
-  // compare height
-  console.log("Is Taller: ", human.isTallerThan(dino));
-  // compare weight
-  console.log("Is Heavier: ", human.isHeavierThan(dino));
-  // compare diet
-  console.log("Same Diet: ", human.hasSameDietAs(dino));
+  const stats = {}
+  for (const dino of dinosaurs) {
 
+    stats[human.name] = {};
+    if (dino.height < human.height) {
+      stats[human.name].height = `I'm <em>taller</em> than a ${dino.species}!!`;
+    }
+    if (dino.weight < human.weight) {
+      stats[human.name].weight = `I <em>weigh</em> more than a ${dino.species}!!`;
+    }
+
+    stats[dino.species] = {};
+    stats[dino.species].height = compareHeight(dino, human);
+    stats[dino.species].weight = compareWeight(dino, human);
+    stats[dino.species].diet = compareDiet(dino, human);
+  }
+
+  return stats;
 };
 
+const compareHeight = (dino, human) => {
+  const height = dino.height.toLocaleString("en-US");
+  const comparison = human.height > 0
+    ? Math.round((dino.height / human.height)) : dino.height;
+
+  if (dino.isTallerThan(human) === cmp.GREATER) {
+    return `At ${height} inches, I am <em>${comparison}</em> times taller than hooman!`;
+  } else if (dino.isTallerThan(human) === cmp.EQUAL) {
+    return `At ${height} inches, I am the <em>same</em> height as hooman!`;
+  } else {
+    return `At ${height} inches, hooman is <em>${Math.round((human.height / dino.height))}</em> taller than me!`;
+  }
+};
+
+const compareWeight = (dino, human) => {
+  const weight = dino.weight.toLocaleString("en-US");
+  const comparison = human.weight > 0
+    ? Math.round((dino.weight / human.weight)) : dino.weight;
+
+  if (dino.isHeavierThan(human) === cmp.GREATER) {
+    return `At ${weight} pounds, I am <em>${comparison}</em> times heavier than hooman!`;
+  } else if (dino.isHeavierThan(human) === cmp.EQUAL) {
+    return `At ${weight} pounds, I am the <em>same</em> weight as hooman!`;
+  } else {
+    return `At ${weight} pounds, hooman is <em>${Math.round((human.weight / dino.weight))}</em> times heavier than me!`;
+  }
+};
+
+const compareDiet = (dino, human) => {
+  if (dino.hasSameDietAs(human) === cmp.DIFFERENT) {
+    return `As ${dino.diet[0] === "o" ? "an <em>" + dino.diet : "a <em>" + dino.diet}</em>, I eat differently from hooman!`;
+  } else {
+    return `As ${dino.diet[0] === "o" ? "an <em>" + dino.diet : "a <em>" + dino.diet}</em>, I have same diet as hooman!`;
+  }
+};
 
 
 /*
-    Tile layout:
-        H => human tile (5)
-    _____________
-    | 1 | 2 | 3 |
-    -------------
-    | 4 | H | 6 |
-    -------------
-    | 7 | 8 | 9 |
-    -------------
+    Grid Tile layout:
+      _____________
+      | 1 | 2 | 3 |
+      -------------
+      | 4 | H | 6 |
+      -------------
+      | 7 | 8 | 9 |
+      -------------
+    Note:  H => human tile (5)
 */
 
+const generateGridTiles = (dinosaurs, human) => {
+  const statistics = compareBasicData(dinosaurs, human);
 
-const grid = document.getElementById("grid");
+  const gridTileObjects = randomizeGridTileOrder(dinosaurs)
+  gridTileObjects.splice(4, 0, human);
 
-const tiles = document.createDocumentFragment("div");
-const generateTile = (human, dino) => {
-  return `
-<article>
-</article>
-`;
+  for (const object of gridTileObjects) {
+    const objectStats = object.species ? object.species : object.name;
+    grid.innerHTML += generateTile(object, statistics[objectStats]);
+  }
 };
 
-// Generate Tiles for each Dino in Array
+const randomizeGridTileOrder = (gridTiles) => {
+  return gridTiles.sort(() => Math.random() - 0.5)
+};
 
-        // Add tiles to DOM
+const generateTile = (entity, stats) => {
+  const identity = (entity instanceof Human)
+    ? {
+      id: entity.name, class: "human", imgCaption: "hooman"
+    }
+    : {
+      id: entity.species, class: "dinosaur", imgCaption: entity.species.split(" ").join("-").toLowerCase(),
+    };
 
-    // Remove form from screen
+  const statsList = (entity instanceof Dinosaur)
+    ? `
+  <ul>
+    <li>${stats.height}</li>
+    <li>${stats.weight}</li>
+    <li>${stats.diet}</li>
+    <li>${entity.where ? "I made <em>" + entity.where + "</em> my backyard" : ""} </li>
+    <li>${entity.when ? "I lived in <em>" + entity.when + "</em> period" : ""} </li>
+  </ul >
+`
+    : `
+<ul>
+     <li> I am <em>${entity.height}</em> inches tall</li>
+     <li> My current weight is <em>${entity.weight}</em> pounds </li>
+     <li> I am ${entity.diet[0] === "o" ? "an <em>" + entity.diet : "a <em>" + entity.diet}</em> .</li>
+</ul>
+`;
 
+  // set a random fact for the human from the stats
+  if (entity instanceof Human && (Object.keys(stats).length !== 0)) {
+    entity.fact = (Math.random() < 0.5) ? stats.height : stats.weight;
+  }
 
-// On button click, prepare and display infographic
+  return `
+<div class="grid-item" data-entity="${identity.class}">
+  <header class="grid-item-header">
+    <h3>${identity.id}</h3>
+    <figure>
+        <img src="${entity.imgURL}" alt="${identity.id.toLowerCase()} image"/>
+        <figcaption>${identity.imgCaption}</figcaption>
+    </figure>
+  </header>
+
+  ${statsList}
+
+  <footer class="grid-item-footer">
+    <p>${entity.fact ? entity.fact : ""}</p>
+  </footer>
+</div >
+  `;
+};

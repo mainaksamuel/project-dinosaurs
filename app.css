@@ -116,6 +116,15 @@ p {
     color: #fff;
 }
 
+.grid-item ul {
+    list-style: disc;
+    /* padding-left: 0; */
+    text-justify: auto;
+    text-align: left;
+    line-height: 2.6em;
+    margin-bottom: 7em;
+}
+
 /* Form Styles */
 .form-container {
     background: #eee;
