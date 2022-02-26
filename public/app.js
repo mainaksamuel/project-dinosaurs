@@ -243,6 +243,17 @@ const compareDiet = (dino, human) => {
   }
 };
 
+/*
+    Grid Tile layout:
+      _____________
+      | 1 | 2 | 3 |
+      -------------
+      | 4 | H | 6 |
+      -------------
+      | 7 | 8 | 9 |
+      -------------
+    Note:  H => human tile (5)
+*/
 
 /**
  * @description Generate Grid Tiles and display infographic with the `human` in the center tile
