@@ -1,0 +1,24 @@
+{
+  "name": "project-dinosaurs",
+  "version": "1.0.0",
+  "description": "Short infographic comparing a human and dinosaurs",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mainaksamuel/project-dinosaurs.git"
+  },
+  "keywords": [],
+  "author": "Samuel Karanja",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mainaksamuel/project-dinosaurs/issues"
+  },
+  "homepage": "https://github.com/mainaksamuel/project-dinosaurs#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
