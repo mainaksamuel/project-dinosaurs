@@ -124,6 +124,7 @@ function getFormData() {
 
 const grid = document.getElementById("grid");
 const form = document.getElementById("dino-compare");
+const pageReloadBtn = document.getElementById("page-reload-btn");
 const compareBtn = document.getElementById("btn");
 
 compareBtn.addEventListener("click", () => {
@@ -136,10 +137,17 @@ compareBtn.addEventListener("click", () => {
     return human;
   })(formData);
 
-  // make tiles or display infographic
   form.hidden = true;
-  generateGridTiles(dinosaurArray, human);
 
+  // make tiles or display infographic
+  generateGridTiles(dinosaurArray, human);
+  pageReloadBtn.hidden = false;
+
+});
+
+
+pageReloadBtn.addEventListener("click", () => {
+  location.reload();
 });
 
 
@@ -271,9 +279,9 @@ const randomizeGridTileOrder = (gridTiles) => {
 
 
 /**
- * @description Generate markup for each tile in grid array
+ * @description Generate markup for each tile object in grid array
  * @param {object} entity - A grid tile object representing a dinosaur or human
- * @param {object} stats - Statistics for the entity object
+ * @param {object} stats - Statistics for the grid tile object (entity)
  * @returns {string} String markup representation of a grid tile
  */
 const generateTile = (entity, stats) => {
