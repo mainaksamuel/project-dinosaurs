@@ -353,7 +353,7 @@ const generateTile = (entity, stats) => {
           ${identity.statsList}
 
           <footer class="grid-item-footer">
-            <p>${entity.fact ? entity.fact : ""}</p>
+            <p>${entity.fact}</p>
           </footer>
         </div >
        `;
