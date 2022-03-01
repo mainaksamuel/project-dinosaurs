@@ -102,11 +102,6 @@ const dinosaurArray = (function getDinosaurArray() {
 })();
 
 
-const grid = document.getElementById("grid");
-const form = document.getElementById("dino-compare");
-const pageReloadBtn = document.getElementById("page-reload-btn");
-
-
 /**
  * @description Get data from form
  * @returns {object} Object containing form data
@@ -138,8 +133,13 @@ function getHumanData(formData) {
 /*
  * Main Entry
  *
- * Retrieve user data from form once `compare` button is clicked
+ * Retrieve user data from form once form is submitted, and
+ *   generate tiles for displaying
  */
+const grid = document.getElementById("grid");
+const form = document.getElementById("dino-compare");
+const pageReloadBtn = document.getElementById("page-reload-btn");
+
 form.onsubmit = function(evt) {
   evt.preventDefault();
 
