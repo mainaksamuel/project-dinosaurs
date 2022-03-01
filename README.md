@@ -23,5 +23,5 @@ Install dependencies
 Start the server and browse to the given `url`
 
 ```bash
-  npm server.js
+  node server.js
 ```
