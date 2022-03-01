@@ -16,7 +16,7 @@ class BasicData {
   constructor({ height, weight, diet }) {
     this.height = height;
     this.weight = weight;
-    this.diet = diet;
+    this.diet = diet.toLowerCase();
   }
 
   compareHeightTo(other) {
@@ -102,46 +102,57 @@ const dinosaurArray = (function getDinosaurArray() {
 })();
 
 
+const grid = document.getElementById("grid");
+const form = document.getElementById("dino-compare");
+const pageReloadBtn = document.getElementById("page-reload-btn");
+
+
 /**
  * @description Get data from form
  * @returns {object} Object containing form data
  */
-function getFormData() {
+function getHumanData(formData) {
+  const entries = {};
 
   return (function() {
-    const name = document.getElementById("name").value;
-    const feet = Number(document.getElementById("feet").value);
-    const inches = Number(document.getElementById("inches").value);
-    const weight = Number(document.getElementById("weight").value);
-    const diet = (document.getElementById("diet").value).toLowerCase();
+    for (const [key, value] of formData) {
+      if (key === "inches" || key === "feet" || key === "weight") {
+        entries[key] = Number(value);
+        continue;
+      }
+      entries[key] = value;
+    }
+    const height = entries.feet * 12 + entries.inches;
 
-    const height = (feet * 12) + inches;
-
-    return { name, height, weight, diet };
+    return {
+      name: entries.name,
+      height,
+      weight: entries.weight,
+      diet: entries.diet,
+    };
 
   })();
 }
 
-
-const grid = document.getElementById("grid");
-const form = document.getElementById("dino-compare");
-const pageReloadBtn = document.getElementById("page-reload-btn");
-const compareBtn = document.getElementById("btn");
 
 /*
  * Main Entry
  *
  * Retrieve user data from form once `compare` button is clicked
  */
-compareBtn.addEventListener("click", () => {
-  const formData = getFormData();
+form.onsubmit = function(evt) {
+  evt.preventDefault();
+
+  const formData = new FormData(this)
+
+  const humanData = getHumanData(formData);
 
   // create a human object from form data
-  const human = (function(formData) {
-    const human = new Human(formData);
+  const human = (function(humanData) {
+    const human = new Human(humanData);
     human.imgURL = "/images/human.png";
     return human;
-  })(formData);
+  })(humanData);
 
   // hide form before displaying infographic
   form.hidden = true;
@@ -150,7 +161,7 @@ compareBtn.addEventListener("click", () => {
   generateGridTiles(dinosaurArray, human);
   pageReloadBtn.hidden = false;
 
-});
+};
 
 // Reload page to try again (with different data)
 pageReloadBtn.addEventListener("click", () => {
@@ -196,14 +207,14 @@ const compareBasicData = (dinosaurs, human) => {
 const compareHeight = (dino, human) => {
   const height = dino.height.toLocaleString("en-US");
   const comparison = human.height > 0
-    ? Math.round((dino.height / human.height)) : dino.height;
+    ? Math.round((dino.height / human.height)).toLocaleString("en-US") : dino.height;
 
   if (dino.compareHeightTo(human) === cmp.GREATER) {
     return `At ${height} inches, I am <em>${comparison}</em> times taller than hooman!`;
   } else if (dino.compareHeightTo(human) === cmp.EQUAL) {
     return `At ${height} inches, I am the <em>same</em> height as hooman!`;
   } else {
-    return `At ${height} inches, hooman is <em>${Math.round((human.height / dino.height))}</em> times taller than me!`;
+    return `At ${height} inches, hooman is <em>${Math.round((human.height / dino.height)).toLocaleString("en-US")}</em> times taller than me!`;
   }
 };
 
@@ -217,14 +228,14 @@ const compareHeight = (dino, human) => {
 const compareWeight = (dino, human) => {
   const weight = dino.weight.toLocaleString("en-US");
   const comparison = human.weight > 0
-    ? Math.round((dino.weight / human.weight)) : dino.weight;
+    ? Math.round((dino.weight / human.weight)).toLocaleString("en-US") : dino.weight;
 
   if (dino.compareWeightTo(human) === cmp.GREATER) {
     return `At ${weight} pounds, I am <em>${comparison}</em> times heavier than hooman!`;
   } else if (dino.compareWeightTo(human) === cmp.EQUAL) {
     return `At ${weight} pounds, I am the <em>same</em> weight as hooman!`;
   } else {
-    return `At ${weight} pounds, hooman is <em>${Math.round((human.weight / dino.weight))}</em> times heavier than me!`;
+    return `At ${weight} pounds, hooman is <em>${Math.round((human.weight / dino.weight)).toLocaleString("en-US")}</em> times heavier than me!`;
   }
 };
 
@@ -301,8 +312,8 @@ const generateTile = (entity, stats) => {
     identity.imgCaption = "hooman";
     identity.statsList = `
         <ul>
-            <li> I am <em>${entity.height}</em> inches tall</li>
-            <li> My current weight is <em>${entity.weight}</em> pounds </li>
+            <li> I am <em>${entity.height.toLocaleString("en-US")}</em> inches tall</li>
+            <li> My current weight is <em>${entity.weight.toLocaleString("en-US")}</em> pounds </li>
             <li> I am ${entity.diet[0] === "o" ? "an <em>" + entity.diet : "a <em>" + entity.diet}</em> .</li>
         </ul>
         `;
