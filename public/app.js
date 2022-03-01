@@ -125,7 +125,6 @@ function getHumanData(formData) {
       weight: entries.weight,
       diet: entries.diet,
     };
-
   })();
 }
 
@@ -160,7 +159,6 @@ form.onsubmit = function(evt) {
   // make tiles or display infographic
   generateGridTiles(dinosaurArray, human);
   pageReloadBtn.hidden = false;
-
 };
 
 // Reload page to try again (with different data)
@@ -178,16 +176,23 @@ pageReloadBtn.addEventListener("click", () => {
 const compareBasicData = (dinosaurs, human) => {
 
   const statistics = {}
+
+  // Setting random stats for human
+  statistics[human.name] = [];
+  const randomDino = dinosaurs[Math.floor(Math.random() * dinosaurs.length)];
+
+  if (randomDino.compareHeightTo(human) === cmp.LESSER) {
+    statistics[human.name].push(`I'm <em>taller</em>  than a ${randomDino.species}!!`);
+  }
+  if (human.compareWeightTo(randomDino) === cmp.GREATER) {
+    statistics[human.name].push(`I <em>weigh</em>  more than a ${randomDino.species}!!`);
+  }
+  if (human.compareDietTo(randomDino) === cmp.EQUAL) {
+    statistics[human.name].push(`${randomDino.species} and I <em>could</em> have been food <em>competitors</em> !!`);
+  }
+
+  // Setting random stats for each dinosaur
   for (const dino of dinosaurs) {
-
-    statistics[human.name] = {};
-    if (dino.compareHeightTo(human) === cmp.LESSER) {
-      statistics[human.name].height = `I'm <em>taller</em>  than a ${dino.species}!!`;
-    }
-    if (human.compareWeightTo(dino) === cmp.GREATER) {
-      statistics[human.name].weight = `I <em>weigh</em>  more than a ${dino.species}!!`;
-    }
-
     statistics[dino.species] = {};
     statistics[dino.species].height = compareHeight(dino, human);
     statistics[dino.species].weight = compareWeight(dino, human);
@@ -320,7 +325,7 @@ const generateTile = (entity, stats) => {
 
     // set a random fact for the human from the stats
     if ((Object.keys(stats).length !== 0)) {
-      entity.fact = (Math.random() < 0.5) ? stats.height : stats.weight;
+      entity.fact = stats[Math.floor(Math.random() * stats.length)];
     }
 
   } else {
