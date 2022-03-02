@@ -87,7 +87,7 @@ async function getDinoJSONData() {
  * @returns {array[Dinosaur]} Array containing Dinosaur objects
  */
 const dinosaurArray = (function getDinosaurArray() {
-  let dinoArray = [];
+  const dinoArray = [];
 
   const dinoJSONData = getDinoJSONData();
   dinoJSONData.then(jsonData => {
@@ -342,7 +342,7 @@ const generateTile = (entity, stats) => {
           <li>${entity.when ? "I lived in <em>" + entity.when + "</em> period" : ""} </li>
         </ul >
       `;
-  };
+  }
 
   // return grid-tile template
   return `
