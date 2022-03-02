@@ -87,7 +87,7 @@ async function getDinoJSONData() {
  * @returns {array[Dinosaur]} Array containing Dinosaur objects
  */
 const dinosaurArray = (function getDinosaurArray() {
-  let dinoArray = [];
+  const dinoArray = [];
 
   const dinoJSONData = getDinoJSONData();
   dinoJSONData.then(jsonData => {
